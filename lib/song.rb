@@ -1,4 +1,5 @@
 class Song
+    extend Concerns::Findable
     attr_accessor :name, :artist, :genre
 
     @@all = []
@@ -28,7 +29,7 @@ class Song
     def self.create(name)
         obj = self.new(name)
         obj.save
-        self
+        obj
     end
 
     def artist=(artist)
@@ -43,12 +44,24 @@ class Song
 
     def self.find_by_name(name)
         @@all.find {|obj| obj.name == name}
-        # @@all.find {|obj| obj.name == name}.class
     end
 
     def self.find_or_create_by_name(name)
         found = self.find_by_name(name)
         found ? found : self.create(name)
+    end
+
+    def self.new_from_filename(filename)
+        info = filename.scan(/^(.+) - (.+) - (.+).mp3$/)
+        song = self.find_or_create_by_name(info[0][1])
+        song.artist = Artist.find_or_create_by_name(info[0][0]) 
+        song.genre = Genre.find_or_create_by_name(info[0][2]) 
+        song
+    end
+
+    def self.create_from_filename(filename)
+        song = self.new_from_filename(filename)
+        # song.save
     end
 
     # attr_reader :artist, :genre

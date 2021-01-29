@@ -1,4 +1,6 @@
 class Genre
+    extend Concerns::Findable
+
     attr_accessor :name
 
     @@all = []
@@ -23,7 +25,7 @@ class Genre
     def self.create(name)
         obj = self.new(name)
         obj.save
-        self
+        obj
     end
 
     def songs
